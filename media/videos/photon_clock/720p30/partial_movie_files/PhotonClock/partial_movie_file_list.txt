@@ -1,0 +1,10 @@
+# This file is used internally by FFMPEG.
+file 'file:/home/techibuzz/Code/python-projects/manimtest/media/videos/photon_clock/720p30/partial_movie_files/PhotonClock/1987512680_1700339076_223132457.mp4'
+file 'file:/home/techibuzz/Code/python-projects/manimtest/media/videos/photon_clock/720p30/partial_movie_files/PhotonClock/2538612922_547152445_227588249.mp4'
+file 'file:/home/techibuzz/Code/python-projects/manimtest/media/videos/photon_clock/720p30/partial_movie_files/PhotonClock/2538612922_908152875_1133951522.mp4'
+file 'file:/home/techibuzz/Code/python-projects/manimtest/media/videos/photon_clock/720p30/partial_movie_files/PhotonClock/2538612922_528838913_1133951522.mp4'
+file 'file:/home/techibuzz/Code/python-projects/manimtest/media/videos/photon_clock/720p30/partial_movie_files/PhotonClock/2538612922_908152875_1133951522.mp4'
+file 'file:/home/techibuzz/Code/python-projects/manimtest/media/videos/photon_clock/720p30/partial_movie_files/PhotonClock/2538612922_528838913_1133951522.mp4'
+file 'file:/home/techibuzz/Code/python-projects/manimtest/media/videos/photon_clock/720p30/partial_movie_files/PhotonClock/2538612922_908152875_1133951522.mp4'
+file 'file:/home/techibuzz/Code/python-projects/manimtest/media/videos/photon_clock/720p30/partial_movie_files/PhotonClock/2538612922_528838913_1133951522.mp4'
+file 'file:/home/techibuzz/Code/python-projects/manimtest/media/videos/photon_clock/720p30/partial_movie_files/PhotonClock/2538612922_1754310298_2882322591.mp4'
