@@ -1,12 +1,32 @@
 from manim import *
 import numpy as np
 
-class PhotonClock(Scene):
-    def tick_clock(self, photon, mirror_top, mirror_bottom, ticks):
-        for _ in range(ticks):
-            self.play(MoveAlongPath(photon, Line(mirror_bottom.get_center(), mirror_top.get_center(), buff=DEFAULT_DOT_RADIUS), rate_func=linear), run_time=0.8)
-            self.play(MoveAlongPath(photon, Line(mirror_top.get_center(), mirror_bottom.get_center(), buff=DEFAULT_DOT_RADIUS), rate_func=linear), run_time=0.8)
 
+
+class PhotonClock(Scene):
+    def tick_clock(self, clock, ticks):
+        photon = clock[0]
+        mirror_top = clock[1]
+        mirror_bottom = clock[2]
+
+        anim = [
+            # Going up
+            MoveAlongPath(
+                photon, 
+                Line(mirror_bottom.get_center(), mirror_top.get_center(), buff=DEFAULT_DOT_RADIUS), 
+                rate_func=linear, 
+                run_time=0.8
+            ),
+            # Coming down
+            MoveAlongPath(
+                photon, 
+                Line(mirror_top.get_center(), mirror_bottom.get_center(), buff=DEFAULT_DOT_RADIUS), 
+                rate_func=linear, 
+                run_time=0.8
+            )
+        ]
+
+        return anim * ticks
 
     def construct(self):
         # Text
@@ -37,7 +57,9 @@ class PhotonClock(Scene):
 
         # Clocks
         photon_clock_obs = VGroup(photon, mirror_top, mirror_bottom, mirror_lines, clock_label)
+
         photon_clock_ship = photon_clock_obs.copy()
+        photon_clock_ship[4] = Text("Ship").next_to(photon_clock_ship[2], DOWN).scale(0.4)
 
         # Create the clock
         self.play(Write(text), run_time=2)
@@ -46,7 +68,8 @@ class PhotonClock(Scene):
         self.wait()
 
         # Tick clock
-        self.tick_clock(photon, mirror_top, mirror_bottom, 1)
+        self.play(Succession([anim for anim in self.tick_clock(photon_clock_obs, 5)]))
+        # self.tick_clock(photon, mirror_top, mirror_bottom, 5)
         self.wait()
 
         # Keep aside the main clock
@@ -55,10 +78,21 @@ class PhotonClock(Scene):
         self.wait()
 
         # Second clock
-        self.play(Write(photon_clock_ship), run_time=2.5)
+        self.play(Create(photon_clock_ship[1]), Create(photon_clock_ship[2]), Write(photon_clock_ship[3]))
+        self.play(DrawBorderThenFill(photon_clock_ship[0]), run_time=0.7)
+        self.play(Write(photon_clock_ship[4]), run_time=1.5)
+        
+        # Keep aside second clock
+        self.wait()
         self.play(photon_clock_ship.animate.to_edge(UL))
         self.wait()
 
-        path = FunctionGraph(function=lambda x: (2 / np.pi) * np.arcsin(np.sin(np.pi * x / 2)), x_range=[- 3 / 2 * np.pi, 3 / 2 * np.pi])
-        self.play(MoveAlongPath(photon, path, rate_func=linear), run_time=10)
+        # Move second clock horizontally and simultaneously tick the observer clock
+        self.play(
+            photon_clock_ship.animate(run_time=8*0.8).to_edge(RIGHT),
+            Succession(self.tick_clock(photon_clock_ship, 5)),
+            Succession(self.tick_clock(photon_clock_obs, 5)),
+            rate_func=linear
+        )
+
         self.wait()
