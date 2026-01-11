@@ -1,8 +1,6 @@
 from manim import *
 import numpy as np
 
-
-
 class PhotonClock(Scene):
     def tick_clock(self, clock, ticks):
         photon = clock[0]
@@ -30,7 +28,7 @@ class PhotonClock(Scene):
 
     def construct(self):
         # Text
-        text = Text("Photon Clock").to_edge(UP).scale(0.5)
+        title = Text("Photon Clock").to_edge(UP).scale(0.7)
 
         # Mirror
         mirror_top = Line(LEFT, RIGHT).shift(UP)
@@ -38,13 +36,13 @@ class PhotonClock(Scene):
 
         mirror_lines = VGroup()
         for i in range(11):
-            mirror__bottom_line = Line(mirror_bottom.get_start(), mirror_bottom.get_start()+0.2*DOWN)
-            mirror__bottom_line.rotate(-30*DEGREES, about_point=mirror_bottom.get_start())
-            mirror__bottom_line.shift(0.2*i*RIGHT)
+            mirror__bottom_line = Line(mirror_bottom.get_start(), mirror_bottom.get_start() + 0.2 * DOWN)
+            mirror__bottom_line.rotate(-30 * DEGREES, about_point=mirror_bottom.get_start())
+            mirror__bottom_line.shift(0.2 * i *RIGHT)
 
-            mirror_top_line = Line(mirror_top.get_start(), mirror_top.get_start()+0.2*DOWN)
-            mirror_top_line.rotate(-150*DEGREES, about_point=mirror_top.get_start())
-            mirror_top_line.shift(0.2*i*RIGHT)
+            mirror_top_line = Line(mirror_top.get_start(), mirror_top.get_start() + 0.2 * DOWN)
+            mirror_top_line.rotate(-150 * DEGREES, about_point=mirror_top.get_start())
+            mirror_top_line.shift(0.2 * i * RIGHT)
 
             mirror_lines.add(mirror_top_line)
             mirror_lines.add(mirror__bottom_line)
@@ -53,16 +51,16 @@ class PhotonClock(Scene):
         photon = Dot(color=YELLOW, stroke_width=0.1).next_to(mirror_bottom.get_center(), UP, buff=0.02)
 
         # Clock Label
-        clock_label = Text("Observer").next_to(mirror_bottom, DOWN).scale(0.4)
+        clock_label = Text("Observer's Clock").next_to(mirror_bottom, DOWN).scale(0.4)
 
         # Clocks
         photon_clock_obs = VGroup(photon, mirror_top, mirror_bottom, mirror_lines, clock_label)
 
         photon_clock_ship = photon_clock_obs.copy()
-        photon_clock_ship[4] = Text("Ship").next_to(photon_clock_ship[2], DOWN).scale(0.4)
+        photon_clock_ship[4] = Text("Ship's Clock").next_to(photon_clock_ship[2], DOWN).scale(0.4)
 
         # Create the clock
-        self.play(Write(text), run_time=2)
+        self.play(Write(title), run_time=2)
         self.play(Create(mirror_top), Create(mirror_bottom), Write(mirror_lines))
         self.play(DrawBorderThenFill(photon), run_time=0.7)
         self.wait()
@@ -73,7 +71,7 @@ class PhotonClock(Scene):
         self.wait()
 
         # Keep aside the main clock
-        self.play(Unwrite(text), Write(clock_label), run_time=1.5)
+        self.play(Unwrite(title), Write(clock_label), run_time=1.5)
         self.play(photon_clock_obs.animate.to_edge(DL))
         self.wait()
 
@@ -85,14 +83,67 @@ class PhotonClock(Scene):
         # Keep aside second clock
         self.wait()
         self.play(photon_clock_ship.animate.to_edge(UL))
-        self.wait()
+        self.wait(2)
+
+        # TEST DOT self.add(Dot().next_to(photon_clock_ship[2].get_center(), UP, buff=0.02))
+        # self.add(path)
+
+        # Diagonal path for photon
+        path = FunctionGraph(
+            function=lambda x: ((1.9 / np.pi) * (np.arcsin(np.sin(np.pi * (x - 1) / 1.85)))) + 1,
+            x_range=[0 + DEFAULT_DOT_RADIUS, 11.2], color=BLUE
+        ).next_to(photon_clock_ship[2].get_center(), RIGHT, buff=0).shift(UP)
+        path.z_index = -1
+
+        # Trace
+        trace = TracedPath(photon_clock_ship[0].get_center, color=BLUE)
+        self.add(trace)
 
         # Move second clock horizontally and simultaneously tick the observer clock
         self.play(
-            photon_clock_ship.animate(run_time=8*0.8).to_edge(RIGHT),
-            Succession(self.tick_clock(photon_clock_ship, 5)),
-            Succession(self.tick_clock(photon_clock_obs, 5)),
+            # move top clock right
+            photon_clock_ship.animate(run_time=8*0.8).to_edge(RIGHT), 
+            # move photon diagonally
+            MoveAlongPath(photon_clock_ship[0], path, run_time=8*0.8), 
+            # tick bottom clock
+            Succession(self.tick_clock(photon_clock_obs, 4)), 
             rate_func=linear
         )
+        self.wait(2)
 
+        self.play(Write(path), run_time=4)
+
+        # Erase everything except 1 clock
+        self.play(Uncreate(trace), Unwrite(path), Unwrite(photon_clock_ship), Unwrite(clock_label))
+        self.wait(4)
+
+        # Time Dilation
+        title = Text("Time Dialtion").to_edge(UP).scale(0.7)
+        
+        self.play(Write(title), photon_clock_obs.animate.shift(UP * 2).shift(RIGHT).scale(1.2))
         self.wait()
+
+        arrow1 = Arrow(start=photon_clock_obs[2].get_center(), end=Point(photon_clock_obs[1].get_bottom()).shift(DOWN * DEFAULT_DOT_RADIUS), color=BLUE_B, stroke_width=2.5, tip_length=0.15, buff=0, z_index=-1)
+        brace1 = BraceText(arrow1, text="ct", brace_direction=LEFT, font_size=32)
+
+        self.play(Write(arrow1), Write(brace1))
+        self.wait(3)
+
+        duplicate = photon_clock_obs.copy()
+        duplicate[0].move_to(duplicate[1].get_bottom(), UP)
+        self.play(duplicate.animate.shift(RIGHT * 3))
+
+        arrow2 = Arrow(start=arrow1.get_end(), end=duplicate[0].get_center(), color=ORANGE, stroke_width=2.5, tip_length=0.15, buff=0, z_index=1)
+        brace2 = BraceText(arrow2, text="vt'", brace_direction=UP, font_size=32)
+        self.play(Write(arrow2), Write(brace2))
+        self.wait(3)
+
+        arrow3 = Arrow(start=photon_clock_obs[0].get_center(), end=arrow2.get_end(), color=GREEN, stroke_width=2.5, tip_length=0.15, buff=0.05, z_index=-2)
+        brace3 = BraceBetweenPoints(point_1=arrow3.get_start(), point_2=arrow3.get_end())
+        brace3text = Text(text="ct'", font_size=32).next_to(brace3, DOWN).shift(UP).shift(RIGHT*0.5)
+        self.play(Write(arrow3), Write(brace3), Write(brace3text))
+        
+        self.wait()
+
+        eq1 = MathTex("(ct')^2" + "=" + "(ct)^2" + "(vt')^2")
+        self.play(Write(eq1))
