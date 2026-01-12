@@ -114,20 +114,20 @@ class PhotonClock(Scene):
         self.play(Write(path), run_time=4)
 
         # Erase everything except 1 clock
-        self.play(Uncreate(trace), Unwrite(path), Unwrite(photon_clock_ship), Unwrite(clock_label))
+        self.play(Unwrite(path), Unwrite(trace), Unwrite(photon_clock_ship), Unwrite(clock_label))
         self.wait(4)
 
         # Time Dilation
         title = Text("Time Dialtion").to_edge(UP).scale(0.7)
         
         self.play(Write(title), photon_clock_obs.animate.shift(UP * 2).shift(RIGHT).scale(1.2))
-        self.wait()
+        self.wait(3)
 
         arrow1 = Arrow(start=photon_clock_obs[2].get_center(), end=Point(photon_clock_obs[1].get_bottom()).shift(DOWN * DEFAULT_DOT_RADIUS), color=BLUE_B, stroke_width=2.5, tip_length=0.15, buff=0, z_index=-1)
         brace1 = BraceText(arrow1, text="ct", brace_direction=LEFT, font_size=32)
 
         self.play(Write(arrow1), Write(brace1))
-        self.wait(3)
+        self.wait(2)
 
         duplicate = photon_clock_obs.copy()
         duplicate[0].move_to(duplicate[1].get_bottom(), UP)
@@ -135,15 +135,92 @@ class PhotonClock(Scene):
 
         arrow2 = Arrow(start=arrow1.get_end(), end=duplicate[0].get_center(), color=ORANGE, stroke_width=2.5, tip_length=0.15, buff=0, z_index=1)
         brace2 = BraceText(arrow2, text="vt'", brace_direction=UP, font_size=32)
-        self.play(Write(arrow2), Write(brace2))
-        self.wait(3)
 
         arrow3 = Arrow(start=photon_clock_obs[0].get_center(), end=arrow2.get_end(), color=GREEN, stroke_width=2.5, tip_length=0.15, buff=0.05, z_index=-2)
         brace3 = BraceBetweenPoints(point_1=arrow3.get_start(), point_2=arrow3.get_end())
-        brace3text = Text(text="ct'", font_size=32).next_to(brace3, DOWN).shift(UP).shift(RIGHT*0.5)
-        self.play(Write(arrow3), Write(brace3), Write(brace3text))
+        brace3_text = Text(text="ct'", font_size=32).next_to(brace3, DOWN).shift(UP).shift(RIGHT*0.5)
         
+        self.play(Write(arrow3), Write(brace3), Write(brace3_text))
+        self.wait(3)
+
+        self.play(Write(arrow2), Write(brace2))
+        self.wait(5)
+
+        eqnref = Dot().to_corner(UR).shift(LEFT * 3).shift(DOWN)
+        eq1 = MathTex("(ct')^2" + "=" + "(ct)^2" + "+" + "(vt')^2").next_to(eqnref, DOWN)
+        eq2 = MathTex("(ct')^2" + "-" + "(vt')^2" + "=" + "(ct)^2").next_to(eqnref, DOWN * 4)
+        eq3 = MathTex("c^2t'^2" + "-" + "v^2t'^2" + "=" + "c^2t^2").next_to(eqnref, DOWN * 7)
+        eq4 = MathTex("t'^2(c^2 - v^2)" + "=" + "c^2t^2").move_to(eq3)
+        eq5 = MathTex("t'^2(1 - \\frac{v^2}{c^2})" + "=" + "t^2").move_to(eq3)
+        eq6 = MathTex("t'^2" + "=" + "\\frac{t^2}{(1 - \\frac{v^2}{c^2})}").move_to(eq3)
+        eq7 = MathTex("t'" + "=" + "\\frac{t}{\\sqrt{1 - \\frac{v^2}{c^2}}}").move_to(eq3)
+
+        eq8 = MathTex("t'" + "=" + "\\gamma t").next_to(eqnref, DOWN * 7)
+        eq8[0][3].set_color(GREEN_D)
+
+        gamma = MathTex("\\gamma = \\frac{1}{\\sqrt{1 - \\frac{v^2}{c^2}}}").move_to(eq8).shift(DOWN).scale(1.4)
+        gamma[0][0].set_color(GREEN_D)
+
+        box_to_gamma = SurroundingRectangle(gamma, buff=0.4, color=GREEN)
+
+        gamma_text = Text("Lorentz Factor", font_size=40).move_to(gamma).shift(DOWN * 1.9)
+        gamma_text[0:7].set_color(GREEN_D)
+
+        self.play(Write(eq1))
+        self.wait(2.5)
+        self.play(Transform(eq1, eq2, replace_mobject_with_target_in_scene=True))
+        self.wait(2.5)
+        self.play(Transform(eq2, eq3, replace_mobject_with_target_in_scene=True))
+        self.wait(2.5)
+        self.play(Transform(eq3, eq4, replace_mobject_with_target_in_scene=True))
+        self.wait(2.5)
+        self.play(Transform(eq4, eq5, replace_mobject_with_target_in_scene=True))
+        self.wait(2.5)
+        self.play(Transform(eq5, eq6, replace_mobject_with_target_in_scene=True))
+        self.wait(2.5)
+        self.play(Transform(eq6, eq7, replace_mobject_with_target_in_scene=True))
+        self.wait(2.5)
+        self.play(Transform(eq7, eq8, replace_mobject_with_target_in_scene=True))
+        self.wait(2)
+
+        self.play(eq8.animate.scale(1.5))
+        self.play(eq8.animate.shift(UP * 1.5))
+
+        box_to_eq8 = SurroundingRectangle(eq8, buff=0.4, color=BLUE_D)
+        self.play(Write(box_to_eq8))
         self.wait()
 
-        eq1 = MathTex("(ct')^2" + "=" + "(ct)^2" + "(vt')^2")
-        self.play(Write(eq1))
+        self.play(Write(box_to_gamma), Write(gamma), Write(gamma_text), run_time=2)
+        self.wait(10)
+
+        self.play(
+            Unwrite(photon_clock_obs), 
+            Unwrite(duplicate), 
+            Unwrite(arrow1), 
+            Unwrite(brace1), 
+            Unwrite(arrow2), 
+            Unwrite(brace2), 
+            Unwrite(arrow3), 
+            Unwrite(brace3), 
+            Unwrite(brace3_text),
+            Unwrite(eq8),
+            Unwrite(box_to_eq8),
+            Unwrite(gamma),
+            Unwrite(box_to_gamma),
+            Unwrite(gamma_text)
+        )
+        self.wait()
+
+        table = MathTable(table=[
+            ["v", "\\gamma"], 
+            ["0.5c", "1.2"],
+            ["0.87c", "2"],
+            ["0.999c", "22"],
+            ["0.9999c", "70"]
+            ],include_outer_lines=True)
+        table[0][0][:].set_color(YELLOW).scale(1.2)
+        table[0][1][0].set_color(GREEN).scale(1.2)
+
+        self.play(Write(table.scale(0.8)))
+        self.play(table.animate.scale(1.2))
+        self.wait(3)
