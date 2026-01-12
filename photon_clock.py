@@ -85,9 +85,6 @@ class PhotonClock(Scene):
         self.play(photon_clock_ship.animate.to_edge(UL))
         self.wait(2)
 
-        # TEST DOT self.add(Dot().next_to(photon_clock_ship[2].get_center(), UP, buff=0.02))
-        # self.add(path)
-
         # Diagonal path for photon
         path = FunctionGraph(
             function=lambda x: ((1.9 / np.pi) * (np.arcsin(np.sin(np.pi * (x - 1) / 1.85)))) + 1,
@@ -146,6 +143,7 @@ class PhotonClock(Scene):
         self.play(Write(arrow2), Write(brace2))
         self.wait(5)
 
+        # Equations
         eqnref = Dot().to_corner(UR).shift(LEFT * 3).shift(DOWN)
         eq1 = MathTex("(ct')^2" + "=" + "(ct)^2" + "+" + "(vt')^2").next_to(eqnref, DOWN)
         eq2 = MathTex("(ct')^2" + "-" + "(vt')^2" + "=" + "(ct)^2").next_to(eqnref, DOWN * 4)
@@ -158,6 +156,7 @@ class PhotonClock(Scene):
         eq8 = MathTex("t'" + "=" + "\\gamma t").next_to(eqnref, DOWN * 7)
         eq8[0][3].set_color(GREEN_D)
 
+        # Lorentz Factor things
         gamma = MathTex("\\gamma = \\frac{1}{\\sqrt{1 - \\frac{v^2}{c^2}}}").move_to(eq8).shift(DOWN).scale(1.4)
         gamma[0][0].set_color(GREEN_D)
 
@@ -166,6 +165,7 @@ class PhotonClock(Scene):
         gamma_text = Text("Lorentz Factor", font_size=40).move_to(gamma).shift(DOWN * 1.9)
         gamma_text[0:7].set_color(GREEN_D)
 
+        # Transform one equation to another
         self.play(Write(eq1))
         self.wait(2.5)
         self.play(Transform(eq1, eq2, replace_mobject_with_target_in_scene=True))
@@ -193,6 +193,7 @@ class PhotonClock(Scene):
         self.play(Write(box_to_gamma), Write(gamma), Write(gamma_text), run_time=2)
         self.wait(10)
 
+        # Remove for table
         self.play(
             Unwrite(photon_clock_obs), 
             Unwrite(duplicate), 
@@ -209,7 +210,7 @@ class PhotonClock(Scene):
             Unwrite(box_to_gamma),
             Unwrite(gamma_text)
         )
-        self.wait()
+        self.wait(1.5)
 
         table = MathTable(table=[
             ["v", "\\gamma"], 
