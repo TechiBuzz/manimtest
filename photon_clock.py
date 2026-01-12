@@ -116,6 +116,7 @@ class PhotonClock(Scene):
 
         # Time Dilation
         title = Text("Time Dialtion").to_edge(UP).scale(0.7)
+        title[:4].set_color(YELLOW_C)
         
         self.play(Write(title), photon_clock_obs.animate.shift(UP * 2).shift(RIGHT).scale(1.2))
         self.wait(3)
@@ -218,7 +219,7 @@ class PhotonClock(Scene):
             ["0.87c", "2"],
             ["0.999c", "22"],
             ["0.9999c", "70"]
-            ],include_outer_lines=True)
+        ],include_outer_lines=True)
         table[0][0][:].set_color(YELLOW).scale(1.2)
         table[0][1][0].set_color(GREEN).scale(1.2)
 
