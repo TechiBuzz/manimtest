@@ -13,14 +13,14 @@ class LengthContraction(Scene):
         ship2 = SVGMobject(SPACESHIP_IMAGE).scale(0.4)
         plat2 = NumberLine(x_range=[1, 15],include_numbers=True, length=13).shift(DOWN * 2.8)
 
-        d1 = Dot(color=GREEN).next_to(plat1.numbers[2], UP).shift(DOWN * DEFAULT_DOT_RADIUS)
+        d1 = Dot(color=GREEN_C).next_to(plat1.numbers[2], UP).shift(DOWN * DEFAULT_DOT_RADIUS)
 
-        d2 = Dot(color=GREEN).next_to(plat1.numbers[10], UP).shift(DOWN * DEFAULT_DOT_RADIUS)
+        d2 = Dot(color=GREEN_C).next_to(plat1.numbers[10], UP).shift(DOWN * DEFAULT_DOT_RADIUS)
 
-        d3 = Dot(color=GREEN)
+        d3 = Dot(color=GREEN_C)
         d3.add_updater(lambda dot: dot.next_to(plat2.numbers[2], UP).shift(DOWN * DEFAULT_DOT_RADIUS))
 
-        d4 = Dot(color=GREEN)
+        d4 = Dot(color=GREEN_C)
         d4.add_updater(lambda dot: dot.next_to(plat2.numbers[6], UP).shift(DOWN * DEFAULT_DOT_RADIUS))
 
         # Platform POV
@@ -34,7 +34,7 @@ class LengthContraction(Scene):
         self.play(Write(label1))
 
         gamma = MathTex("\\gamma = 2").next_to(label1).shift(RIGHT * 9).scale(0.7)
-        gamma[0][0].set_color(GREEN_C)
+        gamma[0][0].set_color(GREEN_D)
 
         self.wait(2)
         self.play(Write(gamma))
@@ -63,11 +63,22 @@ class LengthContraction(Scene):
 
         # Reset bottom platform
         self.play(plat2.animate.shift(RIGHT * 3.7))
-        self.wait(8)
+        self.wait(4)
 
-        # Remove everything
+        # Remove dot updaters
         d3.clear_updaters()
         d4.clear_updaters()
+
+        # Shrink platform
+        self.play(plat2.animate.stretch(0.5, dim=0, about_point=plat2.numbers[2].get_center()))
+        self.wait(4)
+
+        # Shrink ship
+        self.play(ship1.animate.stretch(0.5, dim=0))
+        self.wait(4)
+
+        # Remove everything
+
         self.play(
             Uncreate(d1),
             Uncreate(d2),
